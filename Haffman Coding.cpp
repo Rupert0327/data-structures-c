@@ -176,11 +176,19 @@ int main() {
     char codes[MAX][MAX] = {{0}};
     char code[MAX];
     GenerateHaffmanCodes(root, code, 0, codes);
+
+    //Each character's Haffman code
+    for (int i = 0; text[i]; i++)
+        printf("Character: %c, Code: %s\n", text[i], codes[(unsigned char)text[i]]);
+
+    // Encode
     char encoded[1000] = {0};
     for (int i = 0; text[i]; i++) {
         strcat(encoded, codes[(unsigned char)text[i]]);
     }
     printf("Encoded: %s\n", encoded);
+
+    // Decode
     char decoded[1000] = {0};
     HaffmanDecode(root, encoded, decoded);
     printf("Decoded: %s\n", decoded);
