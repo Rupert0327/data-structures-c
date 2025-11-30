@@ -61,6 +61,7 @@ void ShiftDown(MinHeap *heap, int index) {
 void InsertMinHeap(MinHeap *heap, HaffmanNode *node) {
     if (heap->size >= heap->capacity) return;
     heap->nodes[heap->size] = node;
+    //reorganize the heap
     ShiftUp(heap, heap->size);
     heap->size++;
 }
@@ -70,10 +71,12 @@ HaffmanNode* PopMinHeap(MinHeap *heap) {
     HaffmanNode *minNode = heap->nodes[0];
     heap->nodes[0] = heap->nodes[heap->size - 1];
     heap->size--;
+    //turn it into a min-heap again
     ShiftDown(heap, 0);
     return minNode;
 }
 
+//Create a Haffman Node
 HaffmanNode* CreateHaffmanNode(unsigned char data, int weight) {
     HaffmanNode *node = (HaffmanNode *)malloc(sizeof(HaffmanNode));
     node->data = data;
@@ -89,6 +92,7 @@ HaffmanNode* BuildHaffmanTree(int freq[]) {
     heap.capacity = MAX;
     heap.nodes = (HaffmanNode **)malloc(sizeof(HaffmanNode *) * heap.capacity);
 
+    // Insert all characters with non-zero frequency into the min-heap
     for (int i = 0; i < MAX; i++) {
         if (freq[i] > 0) {
             HaffmanNode *node = CreateHaffmanNode((unsigned char)i, freq[i]);
@@ -97,8 +101,11 @@ HaffmanNode* BuildHaffmanTree(int freq[]) {
     }
 
     while (heap.size > 1) {
+        //find out the smallest node
         HaffmanNode *left = PopMinHeap(&heap);
+        //find out the second smallest node
         HaffmanNode *right = PopMinHeap(&heap);
+        //combine them into a new node
         HaffmanNode *newNode = CreateHaffmanNode(0, left->weight + right->weight);
         newNode->left = left;
         newNode->right = right;
@@ -111,6 +118,11 @@ HaffmanNode* BuildHaffmanTree(int freq[]) {
 }
 
 void GenerateHaffmanCodes(HaffmanNode *root, char *code, int depth, char codes[MAX][MAX]) {
+    /*
+        char codes[MAX][MAX]:
+        first dimension: character (0-255)
+        second dimension: corresponding Haffman code as string
+    */
     if (!root) return;
 
     if (!root->left && !root->right) {
